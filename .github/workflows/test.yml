@@ -24,4 +24,3 @@ jobs:
     - name: Ansible check
       run: |
         ansible-playbook --syntax-check nagios-server/pi-install.yml
-        ansible-playbook --check nagios-server/pi-install.yml
