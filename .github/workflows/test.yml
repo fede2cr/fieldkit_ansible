@@ -9,7 +9,7 @@ on:
     type: [rerequested]
 
 jobs:
-  alfresco-docker-install:
+  fieldkit-ansible-test:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2.2.0
