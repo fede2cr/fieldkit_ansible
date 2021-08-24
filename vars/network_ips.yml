@@ -1,0 +1,21 @@
+# Research node
+research_gw_ip: 10.146.17.1
+research_nagios_ip: 10.146.17.2
+research_relay_ip: 10.146.17.3
+research_loragw_ip: 10.146.17.4
+
+p2p_research_buoamir_ip: 10.146.17.10
+p2p_research_david_ip: 10.146.17.11
+p2p_research_musafelli_ip: 10.146.17.12
+
+# Buoamir node
+p2p_buoamir_research_ip: 10.146.17.20
+buoamir_loragw_ip: 10.146.17.21
+
+# David node
+p2p_david_research_ip: 10.146.17.31
+david_loragw_ip: 10.146.17.32
+
+# Musafelli node
+p2p_musafelli_research_ip: 10.146.17.41
+musafelli_loragw_ip: 10.146.17.42

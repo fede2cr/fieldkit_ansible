@@ -1,0 +1,108 @@
+---
+- hosts: pi
+  vars_files:
+    - ../vars/network_ips.yml
+  tasks:
+    - name: Adding Zerotier gpg key
+      apt_key:
+        url: https://raw.githubusercontent.com/zerotier/ZeroTierOne/master/doc/contact%40zerotier.com.gpg
+        state: present
+        keyring: /etc/apt/trusted.gpg.d/zerotier.gpg
+      become: yes
+    - name: Adding Zerotier apt repo
+      apt_repository:
+        repo: deb https://download.zerotier.com/debian/buster buster stable main
+      become: yes
+    - name: Updates packages
+      apt:
+        update_cache: yes
+      become: yes
+    - name: Upgrades packages
+      apt:
+        upgrade: dist
+      become: yes
+
+
+    # zerotier
+    - name: Installs zerotier package
+      apt:
+        name: zerotier-one
+        state: latest
+      become: yes
+    - name: Joins network
+      ansible.builtin.command:
+        cmd:  "zerotier-cli join {{ zerotier_network_id }}"
+      become: yes
+      register: zerotier_join
+    - name: Prints zerotier join output
+      debug:
+        var: zerotier_join
+    - name: Prints instructions for zerotier auth
+      debug:
+        msg: |
+          "Go to https://my.zerotier.com/network/{{ zerotier_network_id }}"
+          "And authorize the new joined device"
+    - name: Pausing for zerotier auth
+      wait_for:
+        path: "/var/lib/zerotier-one/networks.d/{{ zerotier_network_id }}.conf"
+    - name: Verifying zerotier status
+      ansible.builtin.command:
+        cmd: zerotier-cli status
+      register: zerotier_status
+      retries: 5
+      until: zerotier_status.stdout.find("ONLINE")
+      become: yes
+
+
+    # nagios-core
+    - name: Apache config for nagios
+      ansible.builtin.command:
+        cmd: "{{ item }}"
+      loop: 
+        - a2enmod auth_digest
+        - a2enmod authz_groupfile
+      become: yes
+    - name: Installs nagios core
+      apt:
+        name: nagios4
+        state: latest
+      become: yes
+
+
+    # nagios-rules
+    - name: Creating nagios rules for hosts 
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop:
+        # Research node
+        - { src: ./templates/research-gw.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
+#        - { src: ./templates/research_nagios.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
+#        - { src: ./templates/research_relay.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
+#        - { src: ./templates/research_loragw.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
+        - { src: ./templates/p2p-research-buoamir.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-research-buoamir.cfg" }
+#        - { src: ./templates/p2p_research_david.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_research_david.cfg" }
+#        - { src: ./templates/p2p_research_musafelli.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_research_musafelli.cfg" }
+        # Buoamir node
+#        - { src: ./templates/p2p_buoamir_research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_buoamir_research.cfg" }
+#        - { src: ./templates/buoamir_loragw.cfg.j2, dest: "/etc/nagios4/conf.d/buoamir_loragw.cfg" }
+        # David node
+#        - { src: ./templates/p2p_david_research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_david_research.cfg" }
+#        - { src: ./templates/david_loragw_ip.cfg.j2, dest: "/etc/nagios4/conf.d/david_loragw_ip.cfg" }
+        # Musafelli node
+#        - { src: ./templates/p2p_musafelli_research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_musafelli_research.cfg" }
+#        - { src: ./templates/musafelli_loragw_ip.j2, dest: "/etc/nagios4/conf.d/musafelli_loragw_ip.cfg" }
+      become: yes
+    - name: Applies hosts
+      ansible.builtin.command:
+        cmd: nagios4 -v /etc/nagios4/nagios.cfg
+      become: yes
+    - name: Restarting nagios4
+      ansible.builtin.systemd:
+        state: restarted
+        name: nagios4
+      become: yes
+    # filesystem-ro
+    # nagios filesystem-ro sync
+    # apcupsd
+    # powerstrip-control
