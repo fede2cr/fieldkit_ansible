@@ -240,7 +240,7 @@
           - python3-pip
         state: latest
       become: yes
-    - name: Installs packages for powerstrip-control
+    - name: Installs python packages for powerstrip-control
       pip:
         name: ansible
       become: yes
