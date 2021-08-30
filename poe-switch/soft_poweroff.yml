@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  vars_files:
+    - ../vars/network_ips.yml
+  tasks:
+    - name: Shutdown port 1
+      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 1 0"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweroff
+    - name: Shutdown port 2
+      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 2 0"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweroff
+    - name: Poweron port 1
+      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 1 24"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweron
+    - name: Poweron port 2
+      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 2 24"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweron

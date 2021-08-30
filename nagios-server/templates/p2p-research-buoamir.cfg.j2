@@ -1,7 +1,42 @@
 define host {
   use   linux-server
-  host_name  p2p_research_buoamir
+  host_name  {{ p2p_research_buoamir_hostname }}
   alias     Ethernet Bridge from Research to Bouamir
   address {{ p2p_research_buoamir_ip }}
   max_check_attempts 5
 }
+
+
+define service{
+        use                             generic-service
+        host_name                       {{ p2p_research_buoamir_hostname }}
+        service_description             PING
+        check_command                   check_ping!100.0,20%!500.0,60%
+        }
+define service{
+        use                     generic-service
+        host_name               {{ p2p_research_buoamir_hostname }}
+        service_description     Uptime  
+        check_command           check_snmp!-C {{ p2p_research_buoamir_snmp }} -o sysUpTime.0
+        }
+
+define service{
+        use                     generic-service 
+        host_name               {{ p2p_research_buoamir_hostname }}
+        service_description     Port eth0 Link Status
+        check_command           check_snmp!-C {{ p2p_research_buoamir_snmp }} -o ifOperStatus.2 -r 1 -m RFC1213-MIB
+        }
+
+define service{
+        use                     generic-service
+        host_name               {{ p2p_research_buoamir_hostname }}
+        service_description     Port ath1 Link Status
+        check_command           check_snmp!-C {{ p2p_research_buoamir_snmp }} -o ifOperStatus.7 -r 1 -m RFC1213-MIB
+        }
+
+
+define hostdependency{
+	host_name			{{ p2p_research_buoamir_hostname }}
+	dependent_host_name		{{ research_poeswitch_hostname }}
+	notification_failure_criteria	d,u
+	}

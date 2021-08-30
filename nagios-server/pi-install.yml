@@ -9,9 +9,19 @@
         state: present
         keyring: /etc/apt/trusted.gpg.d/zerotier.gpg
       become: yes
+    - name: Adding Unifi gpg key
+      apt_key:
+        url: https://dl.ui.com/unifi/unifi-repo.gpg
+        state: present
+        keyring: /etc/apt/trusted.gpg.d/unifi.gpg
+      become: yes
     - name: Adding Zerotier apt repo
       apt_repository:
         repo: deb https://download.zerotier.com/debian/buster buster stable main
+      become: yes
+    - name: Adding Unifi apt repo
+      apt_repository:
+        repo: deb https://www.ui.com/downloads/unifi/debian stable ubiquiti
       become: yes
     - name: Updates packages
       apt:
@@ -22,6 +32,25 @@
         upgrade: dist
       become: yes
 
+    # RTC
+    - name: Installs packages for RTC
+      apt:
+        pkg:
+          - python-smbus
+          - i2c-tools
+        state: latest
+      become: yes
+
+
+    # UniFi Controller (for router)
+    - name: Installs unifi controller
+      apt:
+        pkg:
+          - haveged
+          - openjdk-8-jre-headless
+          - unifi
+        state: latest
+      become: yes
 
     # zerotier
     - name: Installs zerotier package
@@ -55,6 +84,19 @@
 
 
     # nagios-core
+    - name: Installs nagios core
+      apt:
+        pkg:
+          - nagios4
+          - snmp
+          - snmp-mibs-downloader
+        state: latest
+      become: yes
+    - name: Removes snmp default config
+      ansible.builtin.file:
+        state: absent
+        path: /etc/snmp/snmp.conf
+      become: yes
     - name: Apache config for nagios
       ansible.builtin.command:
         cmd: "{{ item }}"
@@ -62,12 +104,11 @@
         - a2enmod auth_digest
         - a2enmod authz_groupfile
       become: yes
-    - name: Installs nagios core
-      apt:
-        name: nagios4
-        state: latest
+    - name: Restarting apache
+      ansible.builtin.systemd:
+        state: restarted
+        name: apache2
       become: yes
-
 
     # nagios-rules
     - name: Creating nagios rules for hosts 
@@ -77,9 +118,8 @@
       loop:
         # Research node
         - { src: ./templates/research-gw.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
-#        - { src: ./templates/research_nagios.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
-#        - { src: ./templates/research_relay.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
-#        - { src: ./templates/research_loragw.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
+        - { src: ./templates/research-loragw.cfg.j2, dest: "/etc/nagios4/conf.d/research-loragw.cfg" }
+        - { src: ./templates/research-poeswitch.cfg.j2, dest: "/etc/nagios4/conf.d/research-poeswitch.cfg" }
         - { src: ./templates/p2p-research-buoamir.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-research-buoamir.cfg" }
 #        - { src: ./templates/p2p_research_david.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_research_david.cfg" }
 #        - { src: ./templates/p2p_research_musafelli.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_research_musafelli.cfg" }
@@ -102,7 +142,105 @@
         state: restarted
         name: nagios4
       become: yes
-    # filesystem-ro
+
+        #    # filesystem-ro
+        #    - name: Disable services for RO
+        #      systemd:
+        #        state: stopped
+        #        enabled: no
+        #        name: "{{ item }}"
+        #      loop:
+        #          - bootlogs
+        #          - console-setup
+        #      become: yes
+        #
+        #    - name: Replaces log service
+        #      apt:
+        #        name: busybox-syslogd
+        #        state: latest
+        #      become: yes
+        #
+        #    - name: Adds ro to cmdline.txt
+        #      ansible.builtin.template:
+        #        src: ../templates/cmdline.txt.j2
+        #        dest: /boot/cmdline.txt
+        #      become: yes
+        #
+        #    - name: Deletes files for RO
+        #      ansible.builtin.file:
+        #        state: absent
+        #        path: "{{ item }}"
+        #      loop:
+        #        - /var/lib/dhcp
+        #        - /var/lib/dhcpcd5
+        #        - /var/run
+        #        - /var/spool
+        #        - /var/lock
+        #        - /etc/resolv.conf
+        #        - /var/lib/systemd/random-seed
+        #      become: yes
+        #
+        #    - name: Creates links for RO
+        #      ansible.builtin.file:
+        #        src: '{{ item.src }}'
+        #        dest: '{{ item.dest }}'
+        #        state: link
+        #        force: yes
+        #      loop:
+        #        - { src: /tmp, dest: /var/lib/dhcp }
+        #        - { src: /tmp, dest: /var/lib/dhcpcd5 }
+        #        - { src: /tmp, dest: /var/run }
+        #        - { src: /tmp, dest: /var/spool }
+        #        - { src: /tmp, dest: /var/lock }
+        #        - { src: /tmp, dest: /tmp/dhcpcd.resolv.conf }
+        #        - { src: /var/lib/systemd/random-seed, dest: /tmp/random-seed }
+        #      become: yes
+        #
+        #    - name: Creates fstab with RO
+        #      ansible.builtin.template:
+        #        src: ../templates/fstab.j2
+        #        dest: /etc/fstab
+        #      become: yes
+        #
+        #    - name: Copies systemd random-seed service conf for RO
+        #      ansible.builtin.copy:
+        #        src: ../files/systemd-random-seed.service
+        #        dest: /lib/systemd/system/systemd-random-seed.service 
+        #        owner: root
+        #        group: root
+        #        mode: '0644'
+        #      become: yes
+        #
+        #    - name: Creates empty resolv.conf for RO
+        #      ansible.builtin.file:
+        #        path: /tmp/dhcpcd.resolv.conf
+        #        state: touch
+        #
+        #    - name: Systemd reload for RO
+        #      systemd: daemon_reload=yes
+        #      become: yes
+        #
+        #
+
     # nagios filesystem-ro sync
+    
+    
+    
     # apcupsd
+    - name: Installs control software for UPS
+      apt:
+        name: apcupsd
+        state: latest
+      become: yes
+
     # powerstrip-control
+    - name: Installs packages for powerstrip-control
+      apt:
+        pkg:
+          - python3-pip
+        state: latest
+      become: yes
+    - name: Installs packages for powerstrip-control
+      pip:
+        name: ansible
+      become: yes

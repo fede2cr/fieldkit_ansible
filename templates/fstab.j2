@@ -1,0 +1,6 @@
+proc            /proc           proc    defaults          0       0
+PARTUUID={{ boot_partuuid }}  /boot           vfat    defaults,ro          0       2
+PARTUUID={{ rootfs_partuuid }}  /               ext4    defaults,noatime,ro  0       1
+tmpfs           /tmp            tmpfs   nosuid,nodev         0       0
+tmpfs           /var/log        tmpfs   nosuid,nodev         0       0
+tmpfs           /var/tmp        tmpfs   nosuid,nodev         0       0

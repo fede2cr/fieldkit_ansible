@@ -1,0 +1,21 @@
+---
+- hosts: pi
+  vars_files:
+    - ../vars/network_ips.yml
+  tasks:
+
+    - name: Defines static IP for nagios-server
+      ansible.builtin.lineinfile:
+        path: /etc/dhcpcd.conf
+        regexp: 'interface eth0'
+        insertafter: '#fallback static_eth0'
+        line: |
+          interface eth0
+          static ip_address={{ research_nagios_ip }}/24
+          static routers={{ research_gw_ip }}
+          static domain_name_servers=8.8.8.8
+      become: yes
+    - name: Reboots to apply changes
+      reboot:
+      become: yes
+      ignore_errors: yes
