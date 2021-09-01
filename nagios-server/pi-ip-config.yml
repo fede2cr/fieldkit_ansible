@@ -17,5 +17,8 @@
       become: yes
     - name: Reboots to apply changes
       reboot:
+        connect_timeout: 3
+        post_reboot_delay: 3
+        reboot_timeout: 3
       become: yes
       ignore_errors: yes

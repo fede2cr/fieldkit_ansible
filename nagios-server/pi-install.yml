@@ -244,3 +244,7 @@
       pip:
         name: ansible
       become: yes
+    - name: Reboots to apply Zerotier
+      reboot:
+      become: yes
+
