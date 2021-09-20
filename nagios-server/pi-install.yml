@@ -40,6 +40,42 @@
           - i2c-tools
         state: latest
       become: yes
+    - name: Enables i2c with raspi-config for RTC
+      ansible.builtin.command:
+        cmd:  "raspi-config nonint do_i2c 1"
+      become: yes
+    - name: Configures boot.txt for RTC
+      ansible.builtin.lineinfile:
+        path: "/boot/config.txt"
+        regex: '^dtoverlay=i2c-rtc,ds3231'
+        line: 'dtoverlay=i2c-rtc,ds3231'
+      become: yes
+    - name: Removes packages for RTC
+      apt:
+        pkg:
+          - fake-hwclock
+        state: absent
+      become: yes
+    - name: Disabling fake-hwclock service for RTC
+      ansible.builtin.systemd:
+        enabled: no
+        name: fake-hwclock
+      become: yes
+    - name: Copies udev config for real RTC
+      ansible.builtin.copy:
+        src: ../files/hwclock-set
+        dest: /lib/udev/hwclock-set
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+    - name: Reboots to apply RTC
+      reboot:
+      become: yes
+        # Tests
+        #i2cdetect -y 1
+        #    -> UU
+        #  hwclock -r
 
 
     # UniFi Controller (for router)
@@ -80,6 +116,9 @@
       register: zerotier_status
       retries: 5
       until: zerotier_status.stdout.find("ONLINE")
+      become: yes
+    - name: Reboots to apply Zerotier
+      reboot:
       become: yes
 
 
@@ -232,6 +271,19 @@
         name: apcupsd
         state: latest
       become: yes
+    - name: Copies apcupsd configuration
+      ansible.builtin.copy:
+        src: ../files/apcupsd.conf
+        dest: /etc/apcupsd/apcupsd.conf
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+    - name: Restarts ups software to apply changes
+      systemd:
+        state: restarted
+        name: apcupsd
+      become: yes
 
     # powerstrip-control
     - name: Installs packages for powerstrip-control
@@ -244,7 +296,31 @@
       pip:
         name: ansible
       become: yes
-    - name: Reboots to apply Zerotier
+    - name: Creates POE startup service
+      copy:
+        dest: "/etc/systemd/system/poe-startup.service"
+        content: |
+          [Unit]
+          Description=POE Switch startup
+          After=network.target
+          StartLimitIntervalSec=0
+          [Service]
+          Type=simple
+          User=pi
+          WorkingDirectory=/usr/local/fieldkit_ansible
+          ExecStart=/usr/local/bin/ansible-playbook poe-switch/soft_poweroff.yml --tags="poweron"
+          ExecStartPre=/bin/sleep 30 
+          [Install]
+          WantedBy=multi-user.target
+      become: yes
+    - name: Systemd reload for POE startup
+      systemd: daemon_reload=yes
+      become: yes
+    - name: Enables services for POE startup
+      systemd:
+        enabled: yes
+        name: poe-startup
+      become: yes
+    - name: Reboots to test POE startup
       reboot:
       become: yes
-

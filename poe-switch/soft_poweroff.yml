@@ -4,22 +4,42 @@
     - ../vars/network_ips.yml
   tasks:
     - name: Shutdown port 1
-      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 1 0"
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 1 0"
       delegate_to: 127.0.0.1
       tags:
         - poweroff
     - name: Shutdown port 2
-      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 2 0"
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 2 0"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweroff
+    - name: Shutdown port 3
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 3 0"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweroff
+    - name: Shutdown port 4
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 4 0"
       delegate_to: 127.0.0.1
       tags:
         - poweroff
     - name: Poweron port 1
-      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 1 24"
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 1 24"
       delegate_to: 127.0.0.1
       tags:
         - poweron
     - name: Poweron port 2
-      ansible.builtin.command: "ssh ubnt@{{ research_poeswitch_ip }}  poe 2 24"
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 2 24"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweron
+    - name: Poweron port 3
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 3 24"
+      delegate_to: 127.0.0.1
+      tags:
+        - poweron
+    - name: Poweron port 4
+      ansible.builtin.command: "ssh fieldkit@{{ research_poeswitch_ip }}  poe 4 24"
       delegate_to: 127.0.0.1
       tags:
         - poweron

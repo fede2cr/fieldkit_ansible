@@ -1,28 +1,34 @@
 # Research node
 research_gw_ip: 10.146.17.1
-research_gw_hostname: research_gw
+research_gw_hostname: research-gw
 research_nagios_ip: 10.146.17.2
 research_loragw_ip: 10.146.17.4
-research_loragw_hostname: research_loragw
+research_loragw_hostname: research-loragw
 research_poeswitch_ip: 10.146.17.5
-research_poeswitch_hostname: research_poeswitch
+research_poeswitch_hostname: research-poeswitch
 research_poeswitch_snmp: ohTigaiqu2ki
+p2p_snmp: eekai0ohHahn
 p2p_research_buoamir_ip: 10.146.17.10
-p2p_research_buoamir_hostname: p2p_research_buoamir
-p2p_research_buoamir_snmp: eekai0ohHahn
+p2p_research_buoamir_hostname: p2p-research-buoamir
+p2p_research_buoamir_ssid: research-buoamir
+p2p_research_buoamir_linkpass: moyaiGoog2ox
 p2p_research_david_ip: 10.146.17.11
-p2p_research_david_hostname: p2p_research_david
+p2p_research_david_hostname: p2p-research-david
+p2p_research_david_ssid: research-buoamir
+p2p_research_david_linkpass: moyaiGoog2ox
 p2p_research_musafelli_ip: 10.146.17.12
-p2p_research_musafelli_hostname: p2p_research_musafelli
+p2p_research_musafelli_hostname: p2p-research-musafelli
+p2p_research_musafelli_ssid: research-buoamir
+p2p_research_musafelli_linkpass: moyaiGoog2ox
 
 # Buoamir node
 p2p_buoamir_research_ip: 10.146.17.20
 buoamir_loragw_ip: 10.146.17.21
 
 # David node
-p2p_david_research_ip: 10.146.17.31
-david_loragw_ip: 10.146.17.32
+p2p_david_research_ip: 10.146.17.30
+david_loragw_ip: 10.146.17.31
 
 # Musafelli node
-p2p_musafelli_research_ip: 10.146.17.41
-musafelli_loragw_ip: 10.146.17.42
+p2p_musafelli_research_ip: 10.146.17.40
+musafelli_loragw_ip: 10.146.17.41
