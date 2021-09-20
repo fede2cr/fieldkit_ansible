@@ -309,7 +309,7 @@
           User=pi
           WorkingDirectory=/usr/local/fieldkit_ansible
           ExecStart=/usr/local/bin/ansible-playbook poe-switch/soft_poweroff.yml --tags="poweron"
-          ExecStartPre=/bin/sleep 30 
+          ExecStartPre=/bin/sleep 70 
           [Install]
           WantedBy=multi-user.target
       become: yes
