@@ -23,12 +23,18 @@ p2p_research_musafelli_linkpass: moyaiGoog2ox
 
 # Buoamir node
 p2p_buoamir_research_ip: 10.146.17.20
+p2p_buoamir_research_hostname: p2p-buoamir-research
 buoamir_loragw_ip: 10.146.17.21
+buoamir_loragw_hostname: buoamir-loragw
 
 # David node
 p2p_david_research_ip: 10.146.17.30
+p2p_david_research_hostname: p2p-david-research
 david_loragw_ip: 10.146.17.31
+david_loragw_hostname: david-loragw
 
 # Musafelli node
 p2p_musafelli_research_ip: 10.146.17.40
+p2p_musafelli_research_hostname: p2p-musafelli-research
 musafelli_loragw_ip: 10.146.17.41
+musafelli_loragw_hostname: musafelli-loragw

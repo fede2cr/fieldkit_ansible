@@ -1,16 +1,16 @@
 define host {
   use   linux-server
-  host_name  {{ research_loragw_hostname }}
-  alias     LoRa Gateway TTN in Research
-  address {{ research_loragw_ip }}
+  host_name  {{ david_loragw_hostname }}
+  alias     LoRa Gateway TTN in David
+  address {{ david_loragw_ip }}
   max_check_attempts 5
-  parents research-poeswitch
+  parents p2p-david-research
 }
 
 
 define service{
         use                             generic-service
-        host_name                       {{ research_loragw_hostname }}
+        host_name                       {{ david_loragw_hostname }}
         service_description             PING
         check_command                   check_ping!100.0,20%!500.0,60%
         }

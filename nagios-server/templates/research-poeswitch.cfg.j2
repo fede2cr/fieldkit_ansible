@@ -4,6 +4,7 @@ define host {
   alias     Ethernet Bridge from Research to Bouamir
   address {{ research_poeswitch_ip }}
   max_check_attempts 5
+  parents research-gw
 }
 
 

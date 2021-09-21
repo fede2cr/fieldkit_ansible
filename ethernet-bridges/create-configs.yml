@@ -1,0 +1,63 @@
+---
+- hosts: localhost
+  vars_files:
+    - ../vars/network_ips.yml
+  tasks:
+    # nagios-rules
+    - name: Creating ether bridge configuration files 
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop:
+        # Research-Buoamir
+        - { src: ../files/bridge-ap.cfg.j2, dest: ./confs/p2p-research-buoamir.cfg }
+        - { src: ../files/bridge-su.cfg.j2, dest: ./confs/p2p-buoamir-research.cfg }
+        # Research-David
+        - { src: ../files/bridge-ap.cfg.j2, dest: ./confs/p2p-research-david.cfg }
+        - { src: ../files/bridge-su.cfg.j2, dest: ./confs/p2p-david-research.cfg }
+        # Research-Musafelli
+        - { src: ../files/bridge-ap.cfg.j2, dest: ./confs/p2p-research-musafelli.cfg }
+        - { src: ../files/bridge-su.cfg.j2, dest: ./confs/p2p-musafelli-research.cfg }
+      loop_control:
+        index_var: index
+      vars:
+        bridge_ip:
+          # Research-Buoamir
+          - '{{ p2p_research_buoamir_ip }}'
+          - '{{ p2p_buoamir_research_ip }}'
+          # Research-David
+          - '{{ p2p_research_david_ip }}'
+          - '{{ p2p_david_research_ip }}'
+          # Research-Musafelli
+          - '{{ p2p_research_musafelli_ip }}'
+          - '{{ p2p_musafelli_research_ip }}'
+        bridge_ssid:
+          # Research-Buoamir
+          - '{{ p2p_research_buoamir_ssid }}'
+          - '{{ p2p_research_buoamir_ssid }}'
+          # Research-David
+          - '{{ p2p_research_david_ssid }}'
+          - '{{ p2p_research_david_ssid }}'
+          # Research-Musafelli
+          - '{{ p2p_research_musafelli_ssid }}'
+          - '{{ p2p_research_musafelli_ssid }}'
+        bridge_pass:
+          # Research-Buoamir
+          - '{{ p2p_research_buoamir_linkpass }}'
+          - '{{ p2p_research_buoamir_linkpass }}'
+          # Research-David
+          - '{{ p2p_research_david_linkpass }}'
+          - '{{ p2p_research_david_linkpass }}'
+          # Research-Musafelli
+          - '{{ p2p_research_musafelli_linkpass }}'
+          - '{{ p2p_research_musafelli_linkpass }}'
+        bridge_hostname:
+          # Research-Buoamir
+          - '{{ p2p_research_buoamir_hostname }}'
+          - '{{ p2p_buoamir_research_hostname }}'
+          # Research-David
+          - '{{ p2p_research_david_hostname }}'
+          - '{{ p2p_david_research_hostname }}'
+          # Research-Musafelli
+          - '{{ p2p_research_musafelli_hostname }}'
+          - '{{ p2p_musafelli_research_hostname }}'

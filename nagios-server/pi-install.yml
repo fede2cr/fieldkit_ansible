@@ -160,17 +160,17 @@
         - { src: ./templates/research-loragw.cfg.j2, dest: "/etc/nagios4/conf.d/research-loragw.cfg" }
         - { src: ./templates/research-poeswitch.cfg.j2, dest: "/etc/nagios4/conf.d/research-poeswitch.cfg" }
         - { src: ./templates/p2p-research-buoamir.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-research-buoamir.cfg" }
-#        - { src: ./templates/p2p_research_david.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_research_david.cfg" }
-#        - { src: ./templates/p2p_research_musafelli.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_research_musafelli.cfg" }
+        - { src: ./templates/p2p-research-david.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-research-david.cfg" }
+        - { src: ./templates/p2p-research-musafelli.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-research-musafelli.cfg" }
         # Buoamir node
-#        - { src: ./templates/p2p_buoamir_research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_buoamir_research.cfg" }
-#        - { src: ./templates/buoamir_loragw.cfg.j2, dest: "/etc/nagios4/conf.d/buoamir_loragw.cfg" }
+        - { src: ./templates/p2p-buoamir-research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-buoamir-research.cfg" }
+        - { src: ./templates/buoamir-loragw.cfg.j2, dest: "/etc/nagios4/conf.d/buoamir-loragw.cfg" }
         # David node
-#        - { src: ./templates/p2p_david_research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_david_research.cfg" }
-#        - { src: ./templates/david_loragw_ip.cfg.j2, dest: "/etc/nagios4/conf.d/david_loragw_ip.cfg" }
+        - { src: ./templates/p2p-david-research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-david-research.cfg" }
+        - { src: ./templates/david-loragw.cfg.j2, dest: "/etc/nagios4/conf.d/david-loragw.cfg" }
         # Musafelli node
-#        - { src: ./templates/p2p_musafelli_research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p_musafelli_research.cfg" }
-#        - { src: ./templates/musafelli_loragw_ip.j2, dest: "/etc/nagios4/conf.d/musafelli_loragw_ip.cfg" }
+        - { src: ./templates/p2p-musafelli-research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-musafelli-research.cfg" }
+        - { src: ./templates/musafelli-loragw.cfg.j2, dest: "/etc/nagios4/conf.d/musafelli-loragw.cfg" }
       become: yes
     - name: Applies hosts
       ansible.builtin.command:
