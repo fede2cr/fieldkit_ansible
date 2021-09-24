@@ -5,6 +5,9 @@ define host {
   address {{ p2p_research_david_ip }}
   max_check_attempts 5
   parents research-poeswitch
+  contacts djaadmin
+  contact_groups djaadmins
+  notifications_enabled 1
 }
 
 
@@ -13,12 +16,18 @@ define service{
         host_name                       {{ p2p_research_david_hostname }}
         service_description             PING
         check_command                   check_ping!100.0,20%!500.0,60%
+        contacts djaadmin
+        contact_groups djaadmins
+        notifications_enabled 1
         }
 define service{
         use                     generic-service
         host_name               {{ p2p_research_david_hostname }}
         service_description     Uptime  
         check_command           check_snmp!-C {{ p2p_snmp }} -o sysUpTime.0
+        notifications_enabled 1
+        contacts djaadmin
+        contact_groups djaadmins
         }
 
 define service{
@@ -26,6 +35,12 @@ define service{
         host_name               {{ p2p_research_david_hostname }}
         service_description     Signal Strength
         check_command           check_snmp!-C {{ p2p_snmp }} -o 1.3.6.1.4.1.41112.1.4.5.1.5.1 -r 1 -m RFC1213-MIB  -w -60: -c -70:
+        contacts djaadmin
+        contact_groups djaadmins
+        notifications_enabled 1
+        notifications_enabled 1
+        contacts djaadmin
+        contact_groups djaadmins
         }
 
 define service{
@@ -33,4 +48,7 @@ define service{
         host_name               {{ p2p_research_david_hostname }}
         service_description     Frequency
         check_command           check_snmp!-C {{ p2p_snmp }} -o 1.3.6.1.4.1.41112.1.4.1.1.4.1 -r 1 -m RFC1213-MIB
+        notifications_enabled 1
+        contacts djaadmin
+        contact_groups djaadmins
         }

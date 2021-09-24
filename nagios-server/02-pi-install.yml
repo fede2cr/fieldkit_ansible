@@ -121,6 +121,25 @@
       reboot:
       become: yes
 
+    # apcupsd
+    - name: Installs control software for UPS
+      apt:
+        name: apcupsd
+        state: latest
+      become: yes
+    - name: Copies apcupsd configuration
+      ansible.builtin.copy:
+        src: ../files/apcupsd.conf
+        dest: /etc/apcupsd/apcupsd.conf
+        owner: root
+        group: root
+        mode: '0644'
+      become: yes
+    - name: Restarts ups software to apply changes
+      systemd:
+        state: restarted
+        name: apcupsd
+      become: yes
 
     # nagios-core
     - name: Installs nagios core
@@ -150,10 +169,30 @@
       become: yes
 
     # nagios-rules
+    - name: Install Raspberry Pi Nagios tools
+      get_url:
+        url: https://raw.githubusercontent.com/Napsty/check_rpi_temp/master/check_rpi_temp.py
+        dest: /usr/lib/nagios/plugins/check_rpi_temp.py
+        mode: '0755'
+      become: yes
+    - name: Adds APCUPS and extra plugins to Nagios
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - { src: ../files/check_apcupsd, dest: /usr/lib/nagios/plugins/check_apcupsd }
+        - { src: ../files/ups.cfg, dest: /etc/nagios4/conf.d/ups.cfg }
+        - { src: ../files/commands.cfg, dest: /etc/nagios4/conf.d/commands.cfg }
+        - { src: ../files/notifications.cfg, dest: /etc/nagios4/conf.d/notifications.cfg }
+      become: yes
     - name: Creating nagios rules for hosts 
       ansible.builtin.template:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
+        mode: '0755'
       loop:
         # Research node
         - { src: ./templates/research-gw.cfg.j2, dest: "/etc/nagios4/conf.d/research-gw.cfg" }
@@ -171,6 +210,9 @@
         # Musafelli node
         - { src: ./templates/p2p-musafelli-research.cfg.j2, dest: "/etc/nagios4/conf.d/p2p-musafelli-research.cfg" }
         - { src: ./templates/musafelli-loragw.cfg.j2, dest: "/etc/nagios4/conf.d/musafelli-loragw.cfg" }
+        - { src: ./templates/slack_host_notify.sh.j2, dest: "/usr/lib/nagios/plugins/slack_host_notify.sh" }
+        - { src: ./templates/slack_service_notify.sh.j2, dest: "/usr/lib/nagios/plugins/slack_service_notify.sh" }
+        - { src: ../files/contacts.cfg.j2, dest: /etc/nagios4/conf.d/contacts.cfg }
       become: yes
     - name: Applies hosts
       ansible.builtin.command:
@@ -182,108 +224,6 @@
         name: nagios4
       become: yes
 
-        #    # filesystem-ro
-        #    - name: Disable services for RO
-        #      systemd:
-        #        state: stopped
-        #        enabled: no
-        #        name: "{{ item }}"
-        #      loop:
-        #          - bootlogs
-        #          - console-setup
-        #      become: yes
-        #
-        #    - name: Replaces log service
-        #      apt:
-        #        name: busybox-syslogd
-        #        state: latest
-        #      become: yes
-        #
-        #    - name: Adds ro to cmdline.txt
-        #      ansible.builtin.template:
-        #        src: ../templates/cmdline.txt.j2
-        #        dest: /boot/cmdline.txt
-        #      become: yes
-        #
-        #    - name: Deletes files for RO
-        #      ansible.builtin.file:
-        #        state: absent
-        #        path: "{{ item }}"
-        #      loop:
-        #        - /var/lib/dhcp
-        #        - /var/lib/dhcpcd5
-        #        - /var/run
-        #        - /var/spool
-        #        - /var/lock
-        #        - /etc/resolv.conf
-        #        - /var/lib/systemd/random-seed
-        #      become: yes
-        #
-        #    - name: Creates links for RO
-        #      ansible.builtin.file:
-        #        src: '{{ item.src }}'
-        #        dest: '{{ item.dest }}'
-        #        state: link
-        #        force: yes
-        #      loop:
-        #        - { src: /tmp, dest: /var/lib/dhcp }
-        #        - { src: /tmp, dest: /var/lib/dhcpcd5 }
-        #        - { src: /tmp, dest: /var/run }
-        #        - { src: /tmp, dest: /var/spool }
-        #        - { src: /tmp, dest: /var/lock }
-        #        - { src: /tmp, dest: /tmp/dhcpcd.resolv.conf }
-        #        - { src: /var/lib/systemd/random-seed, dest: /tmp/random-seed }
-        #      become: yes
-        #
-        #    - name: Creates fstab with RO
-        #      ansible.builtin.template:
-        #        src: ../templates/fstab.j2
-        #        dest: /etc/fstab
-        #      become: yes
-        #
-        #    - name: Copies systemd random-seed service conf for RO
-        #      ansible.builtin.copy:
-        #        src: ../files/systemd-random-seed.service
-        #        dest: /lib/systemd/system/systemd-random-seed.service 
-        #        owner: root
-        #        group: root
-        #        mode: '0644'
-        #      become: yes
-        #
-        #    - name: Creates empty resolv.conf for RO
-        #      ansible.builtin.file:
-        #        path: /tmp/dhcpcd.resolv.conf
-        #        state: touch
-        #
-        #    - name: Systemd reload for RO
-        #      systemd: daemon_reload=yes
-        #      become: yes
-        #
-        #
-
-    # nagios filesystem-ro sync
-    
-    
-    
-    # apcupsd
-    - name: Installs control software for UPS
-      apt:
-        name: apcupsd
-        state: latest
-      become: yes
-    - name: Copies apcupsd configuration
-      ansible.builtin.copy:
-        src: ../files/apcupsd.conf
-        dest: /etc/apcupsd/apcupsd.conf
-        owner: root
-        group: root
-        mode: '0644'
-      become: yes
-    - name: Restarts ups software to apply changes
-      systemd:
-        state: restarted
-        name: apcupsd
-      become: yes
 
     # powerstrip-control
     - name: Installs packages for powerstrip-control

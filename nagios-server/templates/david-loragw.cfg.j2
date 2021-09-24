@@ -5,6 +5,9 @@ define host {
   address {{ david_loragw_ip }}
   max_check_attempts 5
   parents p2p-david-research
+  contacts djaadmin
+  contact_groups djaadmins
+  notifications_enabled 1
 }
 
 
@@ -13,4 +16,7 @@ define service{
         host_name                       {{ david_loragw_hostname }}
         service_description             PING
         check_command                   check_ping!100.0,20%!500.0,60%
+        notifications_enabled 1
+        contacts djaadmin
+        contact_groups djaadmins
         }

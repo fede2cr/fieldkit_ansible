@@ -1,0 +1,12 @@
+define contact{
+        contact_name                    djaadmin
+	use				dja-admins
+        alias                           Nagios Admin
+        email                           {{ nagios_email }}
+        }
+
+define contactgroup{
+        contactgroup_name       djaadmins
+        alias                   Nagios Administrators
+        members                 djaadmin
+        }
