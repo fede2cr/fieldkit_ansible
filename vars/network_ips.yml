@@ -14,11 +14,11 @@ p2p_research_buoamir_ssid: research-buoamir
 p2p_research_buoamir_linkpass: moyaiGoog2ox
 p2p_research_david_ip: 10.146.17.11
 p2p_research_david_hostname: p2p-research-david
-p2p_research_david_ssid: research-buoamir
+p2p_research_david_ssid: research-david
 p2p_research_david_linkpass: moyaiGoog2ox
 p2p_research_musafelli_ip: 10.146.17.12
 p2p_research_musafelli_hostname: p2p-research-musafelli
-p2p_research_musafelli_ssid: research-buoamir
+p2p_research_musafelli_ssid: research-musafelli
 p2p_research_musafelli_linkpass: moyaiGoog2ox
 
 # Buoamir node
